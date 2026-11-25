@@ -1,0 +1,17 @@
+# Elektor STM32U385 Dev Board (260660) - Arduino platform
+# Compiling is done by the STM32duino core (STMicroelectronics:stm32 >= 3.1.0),
+# referenced from boards.txt. This file only adds the dfu-util upload tool.
+
+name=Elektor STM32U385 Dev Board (260660)
+version=1.0.0
+
+busybox=
+busybox.windows={runtime.tools.STM32Tools.path}/win/busybox.exe
+
+# dfu-util: Arduino's packaged copy if it is installed, otherwise the one on PATH
+tools.u385dfu.path={runtime.platform.path}/tools
+tools.u385dfu.cmd=dfu-upload.sh
+tools.u385dfu.dfu_util_dir={runtime.tools.dfu-util.path}
+tools.u385dfu.upload.params.verbose=-v
+tools.u385dfu.upload.params.quiet=
+tools.u385dfu.upload.pattern="{busybox}" sh "{path}/{cmd}" "{build.path}/{build.project_name}.bin" "{dfu_util_dir}" {upload.verbose}

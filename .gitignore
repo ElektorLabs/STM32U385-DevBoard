@@ -1,0 +1,14 @@
+# build output
+build/
+*.bin
+*.elf
+*.hex
+*.map
+# editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+# dfu-util binaries copied in by hand on Windows
+src/Arduino15/packages/elektor/hardware/stm32/1.0.0/tools/win/*
+!src/Arduino15/packages/elektor/hardware/stm32/1.0.0/tools/win/PUT-DFU-UTIL-HERE.txt

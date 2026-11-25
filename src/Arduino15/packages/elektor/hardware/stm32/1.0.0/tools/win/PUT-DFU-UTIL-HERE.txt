@@ -1,0 +1,7 @@
+Windows only: copy dfu-util.exe and libusb-1.0.dll into this folder.
+
+Both files are in the win64 folder of
+https://dfu-util.sourceforge.net/releases/dfu-util-0.11-binaries.tar.xz
+
+The upload script (..\dfu-upload.sh) looks here for dfu-util, so you don't
+need to add it to PATH. See docs/windows-install.md, step 5.

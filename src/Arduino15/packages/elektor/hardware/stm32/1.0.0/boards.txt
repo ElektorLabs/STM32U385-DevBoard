@@ -1,0 +1,111 @@
+# STM32U385 board, schematic 260660-002 Rev 1.0
+# Uses the STM32duino core ("STM32 MCU based boards" >= 3.1.0) for everything
+# except the pin map, clock tree and upload tool, which live in this package.
+
+menu.usb=USB support
+menu.xserial=U(S)ART support
+menu.opt=Optimize
+menu.dbg=Debug symbols and core logs
+menu.rtlib=C Runtime Library
+menu.upload_method=Upload method
+
+u385board.name=Elektor STM32U385 Dev Board (260660)
+
+u385board.build.core=STMicroelectronics:arduino
+u385board.build.board=U385_BOARD
+u385board.build.variant=U385_BOARD
+u385board.build.variant_h=variant_U385_BOARD.h
+u385board.build.mcu=cortex-m33
+u385board.build.fpu=-mfpu=fpv5-sp-d16
+u385board.build.float-abi=-mfloat-abi=hard
+u385board.build.series=STM32U3xx
+u385board.build.product_line=STM32U385xx
+u385board.build.st_extra_flags=-D{build.product_line} {build.enable_usb} {build.xSerial}
+u385board.build.extra_flags='-DUSB_PRODUCT_STRING="Elektor STM32U385 Dev Board"'
+u385board.build.flash_offset=0x0
+u385board.debug.svd_file={runtime.tools.STM32_SVD.path}/svd/STM32U3xx/STM32U385.svd
+
+u385board.upload.maximum_size=1048576
+u385board.upload.maximum_data_size=262144
+
+# STM32duino's default USB CDC IDs (VID 0x0483 = STMicroelectronics)
+u385board.vid.0=0x0483
+u385board.pid.0=0x5740
+u385board.upload_port.0.vid=0x0483
+u385board.upload_port.0.pid=0x5740
+
+# --- Upload method -----------------------------------------------------------
+# Default: the board is already in DFU mode (BOOT held at reset), dfu-util
+# flashes it. Touches nothing but the flash.
+u385board.menu.upload_method.dfuManual=USB DFU (board already in DFU mode, dfu-util)
+u385board.menu.upload_method.dfuManual.upload.protocol=dfu
+u385board.menu.upload_method.dfuManual.upload.tool=u385dfu
+u385board.menu.upload_method.dfuManual.upload.tool.default=u385dfu
+u385board.menu.upload_method.dfuManual.upload.use_1200bps_touch=false
+u385board.menu.upload_method.dfuManual.upload.wait_for_upload_port=false
+
+# Opt-in: 1200-baud touch on the USB serial port reboots the board into the
+# ROM DFU bootloader, then dfu-util flashes it. No buttons, but every upload
+# writes the option bytes twice (rated about 10,000 cycles, so roughly 5,000
+# uploads). Also works when the board is already in DFU mode.
+u385board.menu.upload_method.dfuAuto=USB DFU (auto-reset, no buttons, wears option bytes)
+u385board.menu.upload_method.dfuAuto.upload.protocol=dfu
+u385board.menu.upload_method.dfuAuto.upload.tool=u385dfu
+u385board.menu.upload_method.dfuAuto.upload.tool.default=u385dfu
+u385board.menu.upload_method.dfuAuto.upload.use_1200bps_touch=true
+u385board.menu.upload_method.dfuAuto.upload.wait_for_upload_port=false
+
+u385board.menu.upload_method.swdMethod=STM32CubeProgrammer (SWD, K5 header)
+u385board.menu.upload_method.swdMethod.upload.protocol=swd
+u385board.menu.upload_method.swdMethod.upload.tool=STMicroelectronics:stm32CubeProg
+u385board.menu.upload_method.swdMethod.upload.tool.default=STMicroelectronics:stm32CubeProg
+u385board.menu.upload_method.swdMethod.upload.options=-a 0x8000000 -m UR -s 0x8000000 -f 0 -n 0
+
+# --- USB ---------------------------------------------------------------------
+u385board.menu.usb.CDCgen=CDC (generic 'Serial' supersede U(S)ART)
+u385board.menu.usb.CDCgen.build.enable_usb={build.usb_flags} -DUSBD_USE_CDC
+u385board.menu.usb.CDC=CDC (no generic 'Serial')
+u385board.menu.usb.CDC.build.enable_usb={build.usb_flags} -DUSBD_USE_CDC -DDISABLE_GENERIC_SERIALUSB
+u385board.menu.usb.HID=HID (keyboard and mouse)
+u385board.menu.usb.HID.build.enable_usb={build.usb_flags} -DUSBD_USE_HID_COMPOSITE
+u385board.menu.usb.none=None (no auto-reset upload)
+
+# --- U(S)ART -----------------------------------------------------------------
+u385board.menu.xserial.generic=Enabled (generic 'Serial')
+u385board.menu.xserial.none=Enabled (no generic 'Serial')
+u385board.menu.xserial.none.build.xSerial=-DHAL_UART_MODULE_ENABLED -DHWSERIAL_NONE
+u385board.menu.xserial.disabled=Disabled (no Serial support)
+u385board.menu.xserial.disabled.build.xSerial=
+
+# --- Optimize ----------------------------------------------------------------
+u385board.menu.opt.osstd=Smallest (-Os default)
+u385board.menu.opt.oslto=Smallest (-Os) with LTO
+u385board.menu.opt.oslto.build.flags.optimize=-Os -flto
+u385board.menu.opt.o1std=Fast (-O1)
+u385board.menu.opt.o1std.build.flags.optimize=-O1
+u385board.menu.opt.o2std=Faster (-O2)
+u385board.menu.opt.o2std.build.flags.optimize=-O2
+u385board.menu.opt.o3std=Fastest (-O3)
+u385board.menu.opt.o3std.build.flags.optimize=-O3
+u385board.menu.opt.ogstd=Debug (-Og)
+u385board.menu.opt.ogstd.build.flags.optimize=-Og
+
+# --- Debug -------------------------------------------------------------------
+u385board.menu.dbg.none=None
+u385board.menu.dbg.enable_sym=Symbols Enabled (-g)
+u385board.menu.dbg.enable_sym.build.flags.debug=-g -DNDEBUG
+u385board.menu.dbg.enable_log=Core logs Enabled
+u385board.menu.dbg.enable_log.build.flags.debug=
+u385board.menu.dbg.enable_all=Core Logs and Symbols Enabled (-g)
+u385board.menu.dbg.enable_all.build.flags.debug=-g
+
+# --- C runtime ---------------------------------------------------------------
+u385board.menu.rtlib.nano=Newlib Nano (default)
+u385board.menu.rtlib.nanofp=Newlib Nano + Float Printf
+u385board.menu.rtlib.nanofp.build.flags.ldspecs=--specs=nano.specs -u _printf_float
+u385board.menu.rtlib.nanofs=Newlib Nano + Float Scanf
+u385board.menu.rtlib.nanofs.build.flags.ldspecs=--specs=nano.specs -u _scanf_float
+u385board.menu.rtlib.nanofps=Newlib Nano + Float Printf/Scanf
+u385board.menu.rtlib.nanofps.build.flags.ldspecs=--specs=nano.specs -u _printf_float -u _scanf_float
+u385board.menu.rtlib.full=Newlib Standard
+u385board.menu.rtlib.full.build.flags.ldspecs=
